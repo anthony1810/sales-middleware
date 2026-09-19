@@ -57,4 +57,20 @@ struct RateTableTests {
 
         #expect(table.directRates(to: "USD") == ["EUR": dec("1.18"), "USD": 1])
     }
+
+    @Test func directRates_cycleInTheGraph_solvesEachCurrencyOnce() {
+        let table = RateTable([
+            Rate(from: "EUR", to: "GBP", value: dec("0.89")),
+            Rate(from: "GBP", to: "EUR", value: dec("1.12")),
+            Rate(from: "GBP", to: "USD", value: dec("1.32")),
+        ])
+
+        #expect(
+            table.directRates(to: "USD") == [
+                "GBP": dec("1.32"),
+                "EUR": dec("1.1748"),  // 0.89 × 1.32
+                "USD": 1,
+            ]
+        )
+    }
 }
