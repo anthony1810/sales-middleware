@@ -19,7 +19,11 @@ struct RateTableTests {
         ])
 
         #expect(
-            table.directRates(to: "USD") == ["GBP": dec("1.3216"), "EUR": dec("1.18"), "USD": 1]
+            table.directRates(to: "USD") == [
+                "GBP": dec("1.3216"),  // 1.12 × 1.18
+                "EUR": dec("1.18"),
+                "USD": 1,
+            ]
         )
     }
 
@@ -34,13 +38,14 @@ struct RateTableTests {
 
         #expect(
             table.directRates(to: "USD") == [
-                "BRL": dec("0.14061824"),
-                "CAD": dec("0.740096"),
-                "JPY": dec("0.0092512"),
-                "GBP": dec("1.3216"),
+                "BRL": dec("0.14061824"),  // 0.19 × 0.740096
+                "CAD": dec("0.740096"),  // 80 × 0.0092512
+                "JPY": dec("0.0092512"),  // 0.007 × 1.3216
+                "GBP": dec("1.3216"),  // 1.12 × 1.18
                 "EUR": dec("1.18"),
                 "USD": 1,
             ]
         )
     }
+
 }
