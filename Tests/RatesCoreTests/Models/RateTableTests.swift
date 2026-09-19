@@ -89,4 +89,26 @@ struct RateTableTests {
             ]
         )
     }
+
+    @Test func addingDerivedInverses_missingReversePair_addsItAsOneOverRate() {
+        let table = RateTable([
+            Rate(from: "USD", to: "INR", value: dec("83.96"))
+        ])
+
+        let solved = table.addingDerivedInverses().directRates(to: "USD")
+
+        #expect(solved == ["INR": 1 / dec("83.96"), "USD": 1])
+    }
+
+    @Test func addingDerivedInverses_pairProvidedBothWays_keepsTheProvidedRates() {
+        let providedReverse = Rate(from: "USD", to: "EUR", value: dec("0.9"))
+        let table = RateTable([
+            Rate(from: "EUR", to: "USD", value: dec("1.18")),
+            providedReverse,
+        ])
+
+        let solved = table.addingDerivedInverses().directRates(to: "EUR")
+
+        #expect(solved == ["USD": providedReverse.value, "EUR": 1])
+    }
 }
