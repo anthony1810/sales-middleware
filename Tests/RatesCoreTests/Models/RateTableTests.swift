@@ -73,4 +73,20 @@ struct RateTableTests {
             ]
         )
     }
+
+    @Test func directRates_currencyWithBothAShortAndALongPath_usesTheFewestSteps() {
+        let table = RateTable([
+            Rate(from: "AUD", to: "USD", value: dec("2")),
+            Rate(from: "AUD", to: "EUR", value: dec("1")),
+            Rate(from: "EUR", to: "USD", value: dec("1.9")),
+        ])
+
+        #expect(
+            table.directRates(to: "USD") == [
+                "AUD": dec("2"),  // the direct edge, not 1 × 1.9 through EUR
+                "EUR": dec("1.9"),
+                "USD": 1,
+            ]
+        )
+    }
 }
