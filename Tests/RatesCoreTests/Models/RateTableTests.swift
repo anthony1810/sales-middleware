@@ -22,4 +22,25 @@ struct RateTableTests {
             table.directRates(to: "USD") == ["GBP": dec("1.3216"), "EUR": dec("1.18"), "USD": 1]
         )
     }
+
+    @Test func directRates_fiveHopChain_deliversTheExactProduct() {
+        let table = RateTable([
+            Rate(from: "BRL", to: "CAD", value: dec("0.19")),
+            Rate(from: "CAD", to: "JPY", value: dec("80")),
+            Rate(from: "JPY", to: "GBP", value: dec("0.007")),
+            Rate(from: "GBP", to: "EUR", value: dec("1.12")),
+            Rate(from: "EUR", to: "USD", value: dec("1.18")),
+        ])
+
+        #expect(
+            table.directRates(to: "USD") == [
+                "BRL": dec("0.14061824"),
+                "CAD": dec("0.740096"),
+                "JPY": dec("0.0092512"),
+                "GBP": dec("1.3216"),
+                "EUR": dec("1.18"),
+                "USD": 1,
+            ]
+        )
+    }
 }
