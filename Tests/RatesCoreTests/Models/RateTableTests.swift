@@ -48,4 +48,13 @@ struct RateTableTests {
         )
     }
 
+    @Test func directRates_currenciesWithNoPathToTarget_leavesThemOut() {
+        let table = RateTable([
+            Rate(from: "EUR", to: "USD", value: dec("1.18")),
+            Rate(from: "AUD", to: "ZAR", value: dec("10")),
+            Rate(from: "ZAR", to: "INR", value: dec("5")),
+        ])
+
+        #expect(table.directRates(to: "USD") == ["EUR": dec("1.18"), "USD": 1])
+    }
 }
