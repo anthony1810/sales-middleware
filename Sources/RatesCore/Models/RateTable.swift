@@ -1,29 +1,5 @@
 import Foundation
 
-public struct Currency: Hashable, Sendable, ExpressibleByStringLiteral {
-    public let code: String
-
-    public init(_ code: String) {
-        self.code = code
-    }
-
-    public init(stringLiteral value: String) {
-        self.init(value)
-    }
-}
-
-public struct Rate: Equatable, Sendable {
-    public let from: Currency
-    public let to: Currency
-    public let value: Decimal
-
-    public init(from: Currency, to: Currency, value: Decimal) {
-        self.from = from
-        self.to = to
-        self.value = value
-    }
-}
-
 public struct RateTable: Sendable {
     private let rates: [Rate]
 
