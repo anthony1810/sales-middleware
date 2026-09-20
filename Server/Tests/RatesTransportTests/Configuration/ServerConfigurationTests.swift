@@ -30,6 +30,26 @@ struct ServerConfigurationTests {
         #expect(configuration.upstreamURL == URL(string: "https://upstream.example.com/rates")!)
     }
 
+    @Test func init_outOfRangePortOverride_fallsBackToTheDefault() {
+        let outOfRange = ["PORT": "99999"]
+
+        let configuration = ServerConfiguration(environment: outOfRange)
+
+        #expect(configuration.port == 8080)
+    }
+
+    @Test func init_upstreamOverrideWithoutSchemeOrHost_fallsBackToTheDefault() {
+        let relative = ["UPSTREAM_URL": "not-a-url"]
+
+        let configuration = ServerConfiguration(environment: relative)
+
+        #expect(
+            configuration.upstreamURL == URL(
+                string: "https://ile-b2p4.essentialdeveloper.com/rates"
+            )!
+        )
+    }
+
     @Test func init_unparsableOverrides_fallsBackToTheDefaults() {
         let unparsable = [
             "PORT": "not-a-number",
