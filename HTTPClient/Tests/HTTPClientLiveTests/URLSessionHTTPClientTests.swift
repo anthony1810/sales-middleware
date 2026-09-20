@@ -1,0 +1,83 @@
+import Foundation
+import TestSupport
+import Testing
+
+@testable import HTTPClientLive
+
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
+@Suite(.serialized) final class URLSessionHTTPClientTests {
+    deinit {
+        URLProtocolStub.removeStub()
+        leakTrackers.value.forEach { $0.verify() }
+    }
+
+    @Test func getFromURL_performsGETRequestWithURL() async {
+        let url = URL(string: "https://a-specific-url.com")!
+        let observed = LockIsolated<URLRequest?>(nil)
+        URLProtocolStub.observeRequests { observed.setValue($0) }
+        let sut = makeSUT()
+
+        _ = try? await sut.get(from: url)
+
+        #expect(observed.value?.url == url)
+        #expect(observed.value?.httpMethod == "GET")
+    }
+
+    @Test func getFromURL_failsOnRequestError() async {
+        URLProtocolStub.stub(data: nil, response: nil, error: anyNSError())
+        let sut = makeSUT()
+
+        await #expect(throws: Error.self) {
+            try await sut.get(from: anyURL())
+        }
+    }
+
+    @Test func getFromURL_failsOnNonHTTPURLResponse() async {
+        let nonHTTP = URLResponse(
+            url: anyURL(),
+            mimeType: nil,
+            expectedContentLength: 0,
+            textEncodingName: nil
+        )
+        URLProtocolStub.stub(data: Data(), response: nonHTTP, error: nil)
+        let sut = makeSUT()
+
+        await #expect(throws: URLSessionHTTPClient.UnexpectedValuesRepresentation.self) {
+            try await sut.get(from: anyURL())
+        }
+    }
+
+    @Test func getFromURL_succeedsOnHTTPURLResponseWithData() async throws {
+        let data = Data("any data".utf8)
+        let response = anyHTTPURLResponse(statusCode: okStatusCode)
+        URLProtocolStub.stub(data: data, response: response, error: nil)
+        let sut = makeSUT()
+
+        let (receivedData, receivedResponse) = try await sut.get(from: anyURL())
+
+        #expect(receivedData == data)
+        #expect(receivedResponse.url == response.url)
+        #expect(receivedResponse.statusCode == response.statusCode)
+    }
+
+    // MARK: - Helpers
+
+    private let leakTrackers = LockIsolated<[MemoryLeakTracker]>([])
+
+    private func makeSUT(sourceLocation: SourceLocation = #_sourceLocation) -> URLSessionHTTPClient
+    {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [URLProtocolStub.self]
+        let sut = URLSessionHTTPClient(session: URLSession(configuration: configuration))
+        trackForMemoryLeaks(sut, sourceLocation: sourceLocation)
+        return sut
+    }
+
+    private func trackForMemoryLeaks(_ instance: AnyObject, sourceLocation: SourceLocation) {
+        let tracker = MemoryLeakTracker(instance: instance, sourceLocation: sourceLocation)
+        leakTrackers.withValue { $0.append(tracker) }
+    }
+}
