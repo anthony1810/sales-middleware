@@ -21,7 +21,12 @@ final class URLProtocolStub: URLProtocol {
 
     static func observeRequests(_ observer: @escaping @Sendable (URLRequest) -> Void) {
         _stub.setValue(
-            Stub(data: Data(), response: HTTPURLResponse(), error: nil, requestObserver: observer)
+            Stub(
+                data: Data(),
+                response: anyHTTPURLResponse(),
+                error: nil,
+                requestObserver: observer
+            )
         )
     }
 
