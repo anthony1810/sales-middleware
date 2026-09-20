@@ -39,6 +39,29 @@ struct CachingRatesLoaderTests {
         #expect(upstreamCalls.value == 2)
     }
 
+    @Test func load_concurrentMissesOnTheSameCache_hitTheUpstreamOnce() async throws {
+        let gate = Gate()
+        let upstreamCalls = LockIsolated(0)
+        let freshRates = [Rate(from: "EUR", to: "USD", value: dec("1.18"))]
+        let sut = CachingRatesLoader(ttl: .seconds(60), clock: TestClock()) {
+            upstreamCalls.withValue { $0 += 1 }
+            await gate.wait()
+            return freshRates
+        }
+
+        async let first = sut.load()
+        while upstreamCalls.value == 0 { await Task.yield() }
+        async let second = sut.load()
+        await Task.megaYield()
+        gate.open()
+        let firstRates = try await first
+        let secondRates = try await second
+
+        #expect(upstreamCalls.value == 1)
+        #expect(firstRates == freshRates)
+        #expect(secondRates == freshRates)
+    }
+
     // MARK: - Helpers
 
     private func makeSUT(
