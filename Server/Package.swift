@@ -13,11 +13,15 @@ let package = Package(
         .library(
             name: "RatesCache",
             targets: ["RatesCache"]),
+        .library(
+            name: "RatesTransport",
+            targets: ["RatesTransport"]),
     ],
     dependencies: [
         .package(path: "../RatesCore"),
         .package(path: "../HTTPClient"),
         .package(path: "../TestSupport"),
+        .package(url: "https://github.com/hummingbird-project/hummingbird", from: "2.0.0"),
     ],
     targets: [
         .target(
@@ -38,6 +42,22 @@ let package = Package(
             dependencies: [
                 "RatesCache",
                 .product(name: "RatesCore", package: "RatesCore"),
+                .product(name: "TestSupport", package: "TestSupport"),
+            ],
+            swiftSettings: swift6),
+        .target(
+            name: "RatesTransport",
+            dependencies: [
+                .product(name: "RatesCore", package: "RatesCore"),
+                .product(name: "Hummingbird", package: "hummingbird"),
+            ],
+            swiftSettings: swift6),
+        .testTarget(
+            name: "RatesTransportTests",
+            dependencies: [
+                "RatesTransport",
+                .product(name: "RatesCore", package: "RatesCore"),
+                .product(name: "HummingbirdTesting", package: "hummingbird"),
                 .product(name: "TestSupport", package: "TestSupport"),
             ],
             swiftSettings: swift6),
