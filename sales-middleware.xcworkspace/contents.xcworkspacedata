@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:RatesCore">
+   </FileRef>
+   <FileRef
+      location = "group:HTTPClient">
+   </FileRef>
+   <FileRef
+      location = "group:TestSupport">
+   </FileRef>
+   <FileRef
+      location = "group:Server">
+   </FileRef>
+   <FileRef
+      location = "group:RatesAPIEndToEndTests">
+   </FileRef>
+</Workspace>
