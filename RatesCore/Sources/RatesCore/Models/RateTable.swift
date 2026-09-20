@@ -4,7 +4,7 @@ public struct RateTable: Sendable {
     private let rates: [Rate]
 
     public init(_ rates: [Rate]) {
-        self.rates = rates
+        self.rates = rates.filter { $0.value > 0 }
     }
 
     public func addingDerivedInverses() -> RateTable {
@@ -13,7 +13,7 @@ public struct RateTable: Sendable {
             rates
             .filter { !provided.contains(DirectedPair(from: $0.to, to: $0.from)) }
             .map { Rate(from: $0.to, to: $0.from, value: 1 / $0.value) }
-        
+
         return RateTable(rates + derived)
     }
 

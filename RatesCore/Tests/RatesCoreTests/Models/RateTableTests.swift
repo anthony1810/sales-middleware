@@ -112,6 +112,26 @@ struct RateTableTests {
         #expect(solved == ["USD": providedReverse.value, "EUR": 1])
     }
 
+    @Test func directRates_zeroValuedRate_leavesItsCurrencyOut() {
+        let table = RateTable([Rate(from: "EUR", to: "USD", value: 0)])
+
+        #expect(table.directRates(to: "USD") == ["USD": 1])
+    }
+
+    @Test func directRates_negativeRate_leavesItsCurrencyOut() {
+        let table = RateTable([Rate(from: "EUR", to: "USD", value: -1)])
+
+        #expect(table.directRates(to: "USD") == ["USD": 1])
+    }
+
+    @Test func addingDerivedInverses_zeroValuedRate_derivesNoInverse() {
+        let table = RateTable([Rate(from: "USD", to: "INR", value: 0)])
+
+        let solved = table.addingDerivedInverses().directRates(to: "USD")
+
+        #expect(solved == ["USD": 1])
+    }
+
     @Test func directRates_realUpstreamPairsWithDerivedInverses_solveEveryCurrency() {
         let upstreamPairs = RateTable([
             Rate(from: "EUR", to: "USD", value: dec("1.18")),
