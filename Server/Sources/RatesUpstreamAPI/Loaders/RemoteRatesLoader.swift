@@ -12,7 +12,7 @@ public struct RemoteRatesLoader: Sendable {
     }
 
     public func load() async throws -> [Rate] {
-        let (data, _) = try await client.get(from: url)
-        return try UpstreamRatesMapper.map(data)
+        let (data, response) = try await client.get(from: url)
+        return try UpstreamRatesMapper.map(data, from: response)
     }
 }
