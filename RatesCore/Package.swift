@@ -4,7 +4,7 @@ import PackageDescription
 let swift6: [SwiftSetting] = [.swiftLanguageMode(.v6)]
 
 let package = Package(
-    name: "sales-middleware",
+    name: "RatesCore",
     platforms: [.macOS(.v14)],
     products: [
         .library(

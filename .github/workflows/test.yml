@@ -12,5 +12,7 @@ jobs:
     container: swift:6.1
     steps:
       - uses: actions/checkout@v4
-      - name: Test
-        run: swift test -Xswiftc -warnings-as-errors
+      - name: Test RatesCore
+        run: swift test --package-path RatesCore -Xswiftc -warnings-as-errors
+      - name: Test Server
+        run: swift test --package-path Server -Xswiftc -warnings-as-errors
