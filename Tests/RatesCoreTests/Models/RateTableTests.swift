@@ -111,4 +111,27 @@ struct RateTableTests {
 
         #expect(solved == ["USD": providedReverse.value, "EUR": 1])
     }
+
+    @Test func directRates_realUpstreamPairsWithDerivedInverses_solveEveryCurrency() {
+        let upstreamPairs = RateTable([
+            Rate(from: "EUR", to: "USD", value: dec("1.18")),
+            Rate(from: "GBP", to: "EUR", value: dec("1.12")),
+            Rate(from: "CAD", to: "JPY", value: dec("80")),
+            Rate(from: "BRL", to: "CAD", value: dec("0.19")),
+            Rate(from: "JPY", to: "GBP", value: dec("0.007")),
+            Rate(from: "AUD", to: "ZAR", value: dec("10")),
+            Rate(from: "ZAR", to: "INR", value: dec("5")),
+            Rate(from: "USD", to: "INR", value: dec("83.96")),
+        ])
+
+        let solved = upstreamPairs.addingDerivedInverses().directRates(to: "USD")
+
+        #expect(
+            Set(solved.keys) == [
+                "USD", "EUR", "GBP", "JPY", "CAD", "BRL", "INR", "ZAR", "AUD",
+            ]
+        )
+        #expect(solved["INR"] == 1 / dec("83.96"))
+        #expect(solved["AUD"] == dec("10") * (dec("5") * (1 / dec("83.96"))))
+    }
 }
