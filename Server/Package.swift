@@ -10,6 +10,9 @@ let package = Package(
         .library(
             name: "RatesUpstreamAPI",
             targets: ["RatesUpstreamAPI"]),
+        .library(
+            name: "RatesCache",
+            targets: ["RatesCache"]),
     ],
     dependencies: [
         .package(path: "../RatesCore"),
@@ -22,6 +25,20 @@ let package = Package(
             dependencies: [
                 .product(name: "RatesCore", package: "RatesCore"),
                 .product(name: "HTTPClient", package: "HTTPClient"),
+            ],
+            swiftSettings: swift6),
+        .target(
+            name: "RatesCache",
+            dependencies: [
+                .product(name: "RatesCore", package: "RatesCore")
+            ],
+            swiftSettings: swift6),
+        .testTarget(
+            name: "RatesCacheTests",
+            dependencies: [
+                "RatesCache",
+                .product(name: "RatesCore", package: "RatesCore"),
+                .product(name: "TestSupport", package: "TestSupport"),
             ],
             swiftSettings: swift6),
         .testTarget(
