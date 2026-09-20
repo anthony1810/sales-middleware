@@ -45,6 +45,17 @@ let package = Package(
                 .product(name: "TestSupport", package: "TestSupport"),
             ],
             swiftSettings: swift6),
+        .executableTarget(
+            name: "ServerMain",
+            dependencies: [
+                "RatesCache",
+                "RatesTransport",
+                "RatesUpstreamAPI",
+                .product(name: "RatesCore", package: "RatesCore"),
+                .product(name: "HTTPClientLive", package: "HTTPClient"),
+                .product(name: "Hummingbird", package: "hummingbird"),
+            ],
+            swiftSettings: swift6),
         .target(
             name: "RatesTransport",
             dependencies: [
