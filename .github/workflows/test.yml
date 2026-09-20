@@ -19,6 +19,8 @@ jobs:
         run: swift test --package-path HTTPClient -Xswiftc -warnings-as-errors
       - name: Test Server
         run: swift test --package-path Server -Xswiftc -warnings-as-errors
+      - name: Build the release server
+        run: swift build --package-path Server -c release
 
   end-to-end:
     if: github.event_name == 'workflow_dispatch'
