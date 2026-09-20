@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -18,3 +19,12 @@ jobs:
         run: swift test --package-path HTTPClient -Xswiftc -warnings-as-errors
       - name: Test Server
         run: swift test --package-path Server -Xswiftc -warnings-as-errors
+
+  end-to-end:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    container: swift:6.1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Live end-to-end against the real upstream
+        run: swift test --package-path RatesAPIEndToEndTests
